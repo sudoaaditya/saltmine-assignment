@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls, RGBELoader } from 'three/examples/jsm/Addons.js';
+import Stats from 'three/examples/jsm/libs/stats.module.js';
 
 import GUI from 'lil-gui';
 class Sketch {
@@ -17,7 +18,8 @@ class Sketch {
         this.textures = {};
         this.frameId = null;
         this.clock = null;
-        this.gui = new GUI();
+        // this.gui = new GUI();
+        this.stats = new Stats();
 
         this.wallsPositions = [
             [0, 0, 10, 0],
@@ -68,6 +70,8 @@ class Sketch {
 
         // start animation loop
         this.start();
+
+        document.body.appendChild(this.stats.dom);
     }
 
     settings = () => {
@@ -113,7 +117,7 @@ class Sketch {
     }
 
     addLights = () => {
-        const ambientLight = new THREE.AmbientLight(0xffffff, 2);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 2.5);
         this.scene.add(ambientLight);
 
         // Load HDR
@@ -138,6 +142,7 @@ class Sketch {
             this.textures[key] = this.texLoader.load(texPaths[key], (texture) => {
                 texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
                 texture.needsUpdate = true;
+                texture.colorSpace = THREE.SRGBColorSpace;
             });
         });
 
@@ -148,7 +153,7 @@ class Sketch {
         // render base scene data!
         this.walls = new THREE.Group();
 
-        this.wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0, roughness: 1 });
+        this.wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.3, roughness: 0.5 });
 
         this.wallsPositions.forEach((wall) => {
             // convert wall positions into x1 y1 x2 y2 vars
@@ -185,6 +190,7 @@ class Sketch {
     }
 
     drawFloor = () => {
+        // floor material
         const floorMaterial = new THREE.MeshStandardMaterial({
             map: this.textures.floorDiff,
             aoMap: this.textures.floorAo,
@@ -198,6 +204,7 @@ class Sketch {
             side: THREE.DoubleSide,
         });
 
+        // create a shape using the wall positions
         const floorShape = new THREE.Shape();
         const offset = this.thickness / 2;
         this.wallsPositions.forEach((wall, i) => {
@@ -210,6 +217,7 @@ class Sketch {
         });
         floorShape.closePath();
 
+        // extrude the shape to create the floor
         const extrudeSettings = {
             depth: this.thickness,
             bevelEnabled: false,
@@ -217,6 +225,7 @@ class Sketch {
         const floorGeometry = new THREE.ExtrudeGeometry(floorShape, extrudeSettings);
         const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
 
+        // position & rotation the floor mesh
         floorMesh.rotation.x = - Math.PI / 2;
         floorMesh.position.set(this.wallBox3.min.x, this.wallBox3.min.y, this.wallBox3.max.z);
 
@@ -226,6 +235,7 @@ class Sketch {
     isEnclosedPolygon = (walls) => {
         var walls = {};
 
+        // for a polygon to be enclosed, each wall should be connected to exactly 2 other walls
         this.wallsPositions.forEach((wall) => {
             const [x1, y1, x2, y2] = wall;
 
@@ -251,9 +261,9 @@ class Sketch {
 
     update = () => {
         this.elpasedTime = this.clock.getElapsedTime();
-
         this.render();
 
+        this.stats.update();
         this.frameId = window.requestAnimationFrame(this.update);
     }
 
