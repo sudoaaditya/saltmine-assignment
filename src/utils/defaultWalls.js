@@ -51,13 +51,24 @@ const hexagonData = {
     ]
 }
 
+const openSquareData = {
+    wallCount: 4,
+    wallPositions: [
+        [0, 0, 10, 0],
+        [10, 0, 10, 10],
+        [10, 10, 0, 10],
+        [0, 0, 0, 0]
+    ]
+}
+
 
 const defaultData = {
     triangle: triangleData,
     square: squareData,
     rectangle: reactangleData,
     pentagon: pentagonData,
-    hexagon: hexagonData
+    hexagon: hexagonData,
+    openShape: openSquareData
 }
 
 export { defaultData };
