@@ -20,6 +20,11 @@ const App = () => {
 
     useEffect(() => {
         sketch.current = new Sketch(document.querySelector('.webgl'));
+
+        return () => {
+            sketch.current.destroy();
+            sketch.current = null;
+        }
     }, []);
 
     return (

@@ -110,6 +110,7 @@ class Sketch {
     }
 
     stop = () => {
+        this.clock.stop();
         cancelAnimationFrame(this.frameId);
     }
 
@@ -285,6 +286,24 @@ class Sketch {
         if (renderer) {
             renderer.render(scene, camera);
         }
+    }
+
+    destroy = () => {
+        this.stop();
+
+        this.scene.traverse((child) => {
+            if (child.isMesh) {
+                child.geometry.dispose();
+                child.material.dispose();
+            }
+        });
+
+        window.removeEventListener('resize', this.resize);
+
+        this.renderer = null;
+        this.scene = null;
+        this.camera = null;
+        this.controls = null;
     }
 }
 
