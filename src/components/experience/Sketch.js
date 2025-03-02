@@ -2,9 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls, RGBELoader } from 'three/examples/jsm/Addons.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 
-import GUI from 'lil-gui';
 class Sketch {
-
     constructor(container) {
         this.container = container;
 
