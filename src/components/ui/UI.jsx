@@ -5,17 +5,17 @@ import useWallsStore from "../../features/wallsStore";
 const UI = () => {
 
     const {
-        wallCount, wallPositions, updateWallPositions
+        wallCount, wallPositions, updateWallPositions, updateWallCount
     } = useWallsStore();
 
-    // const [wallNumber, setWallNumbers] = useState(wallCount);
+    const [wallNumber, setWallNumbers] = useState(wallCount);
     const [walls, setWalls] = useState(wallPositions);
 
-    /* useEffect(() => {
-        if(wallNumber !== walls.length) {
-            if(wallNumber > walls.length) {
+    useEffect(() => {
+        if (wallNumber !== walls.length) {
+            if (wallNumber > walls.length) {
                 const newWalls = [...walls];
-                for(let i = walls.length; i < wallNumber; i++) {
+                for (let i = walls.length; i < wallNumber; i++) {
                     newWalls.push([0, 0, 0, 0]);
                 }
                 setWalls(newWalls);
@@ -25,7 +25,7 @@ const UI = () => {
                 setWalls(newWalls);
             }
         }
-    }, [wallNumber]); */
+    }, [wallNumber]);
 
     const invalidWallPositions = () => {
         const bFlag = walls.some(wall => {
@@ -56,7 +56,7 @@ const UI = () => {
         <div className="flex-col absolute top-0 right-0 w-80 p-4 bg-gray-200 my-4 mx-2 rounded-sm z-40">
             <h5 className="font-bold font-poppins text-xl">Wall Positions Configurator</h5>
 
-            {/* <div className="flex flex-row items-center justify-between mt-4">
+            <div className="flex flex-row items-center justify-between mt-4">
                 <label className="block font-bold">Number of Walls</label>
                 <input
 
@@ -68,7 +68,7 @@ const UI = () => {
                         setWallNumbers(parseInt(e.target.value));
                     }}
                 />
-            </div> */}
+            </div>
 
             {wallCount > 0 && (
                 <div className="flex flex-col mt-4">
@@ -99,6 +99,7 @@ const UI = () => {
                     ${wallCount === 0 || invalidWallPositions() ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer hover:bg-blue-600'}
                 `}
                 onClick={() => {
+                    updateWallCount(wallNumber);
                     updateWallPositions(walls);
                 }}
                 disabled={wallCount === 0 || invalidWallPositions()}

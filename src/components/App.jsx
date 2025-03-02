@@ -13,7 +13,7 @@ const App = () => {
     const { wallPositions } = useWallsStore();
 
     useEffect(() => {
-        if(sketch.current) {
+        if (sketch.current) {
             sketch.current.updateWalls(wallPositions);
         }
     }, [wallPositions]);

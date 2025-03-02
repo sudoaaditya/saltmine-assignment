@@ -158,7 +158,7 @@ class Sketch {
             const [x1, y1, x2, y2] = wall;
 
             // calculate width of the wall using distance formula
-            const width = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) + 0.2;
+            const width = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 
             // Generate wall geometry & Mesh
             const wallGeo = new THREE.BoxGeometry(width, this.height, this.thickness);
@@ -171,7 +171,7 @@ class Sketch {
 
             // rotation of the wall using atan2 formula
             const angle = Math.atan2(y2 - y1, x2 - x1);
-            wallMesh.rotation.y = angle;
+            wallMesh.rotation.y = -angle;
 
             this.walls.add(wallMesh);
         })
@@ -204,28 +204,24 @@ class Sketch {
 
         // create a shape using the wall positions
         const floorShape = new THREE.Shape();
-        const offset = this.thickness / 2;
         this.wallsPositions.forEach((wall, i) => {
             const [x1, y1] = wall;
             if (i === 0) {
-                floorShape.moveTo(x1 + offset, y1 + offset);
+                floorShape.moveTo(x1, y1);
             } else {
-                floorShape.lineTo(x1 + offset, y1 + offset);
+                floorShape.lineTo(x1, y1);
             }
         });
         floorShape.closePath();
 
-        // extrude the shape to create the floor
-        const extrudeSettings = {
-            depth: this.thickness,
-            bevelEnabled: false,
-        };
-        const floorGeometry = new THREE.ExtrudeGeometry(floorShape, extrudeSettings);
+        const floorGeometry = new THREE.ShapeGeometry(floorShape);
         const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
 
+        const boxCenter = this.wallBox3.getCenter(new THREE.Vector3());
         // position & rotation the floor mesh
         floorMesh.rotation.x = - Math.PI / 2;
-        floorMesh.position.set(this.wallBox3.min.x, this.wallBox3.min.y, this.wallBox3.max.z);
+        floorMesh.scale.set(1, -1, 1);
+        floorMesh.position.y = this.wallBox3.min.y;
 
         this.walls.add(floorMesh);
     }
@@ -260,7 +256,7 @@ class Sketch {
     updateWalls = () => {
         // reset walls
         this.walls.children.forEach((wall) => {
-            if(wall.isMesh) {
+            if (wall.isMesh) {
                 this.scene.remove(wall);
                 wall.geometry.dispose();
                 wall.material.dispose();
