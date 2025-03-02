@@ -1,6 +1,6 @@
 
 const defaultData = {
-    wallCount: 5, 
+    wallCount: 4, 
     wallPositions: [
         // Square
         [0, 0, 10, 0],
@@ -14,7 +14,7 @@ const defaultData = {
         [10, 6, 8, 2],  
         [8, 2, 4, 2],    
         [4, 2, 2, 6]   */  
-    ]
+    ] 
 }
 
 export default defaultData;
