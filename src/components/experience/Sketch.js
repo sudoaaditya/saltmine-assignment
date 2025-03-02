@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls, RGBELoader } from 'three/examples/jsm/Addons.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
+import useWallsStore from '../../features/wallsStore';
 
 class Sketch {
     constructor(container) {
@@ -19,12 +20,10 @@ class Sketch {
         // this.gui = new GUI();
         this.stats = new Stats();
 
-        this.wallsPositions = [
-            [0, 0, 10, 0],
-            [10, 0, 10, 10],
-            [10, 10, 0, 10],
-            [0, 10, 0, 0],
-        ];
+        // zustand data'
+        this.wallStore = useWallsStore;
+
+        this.wallsPositions = this.wallStore.getState().wallPositions;
         this.wallBox3 = null;
 
         this.thickness = 0.2;
@@ -255,6 +254,22 @@ class Sketch {
         this.controls.update();
         this.camera.position.set(size.x / 2, size.x + this.height * 3, size.y);
         this.camera.lookAt(size.x / 2, 0, size.y);
+    }
+
+    updateWalls = () => {
+        // reset walls
+        this.walls.children.forEach((wall) => {
+            if(wall.isMesh) {
+                this.scene.remove(wall);
+                wall.geometry.dispose();
+                wall.material.dispose();
+            }
+        });
+        this.walls.clear();
+
+        // update walls
+        this.wallsPositions = this.wallStore.getState().wallPositions;
+        this.addContents();
     }
 
     update = () => {
